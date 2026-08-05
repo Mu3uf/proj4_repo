@@ -19,9 +19,7 @@ X_emb = np.load('X_embeddings.npy')
 print("شكل مصفوفة BERT Embeddings:", X_emb.shape)
 print("عدد الفئات (labels):", y.shape[0])
 
-# ==========================================
-# 2. تقسيم البيانات (نفس طريقة اليوم الأول بالضبط للمقارنة العادلة)
-# ==========================================
+
 X_train, X_test, y_train, y_test = train_test_split(
     X_emb, y,
     test_size=0.2,

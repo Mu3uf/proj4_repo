@@ -16,7 +16,7 @@ texts = df['text'].astype(str).tolist()
 print("جاري تحميل BERT... (أول مرة بتاخد وقت أطول)")
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 model = BertModel.from_pretrained('bert-base-uncased')
-model.eval()  # وضع التقييم (مش تدريب)
+model.eval()  
 
 
 def get_bert_embedding(text, tokenizer, model, max_length=64):

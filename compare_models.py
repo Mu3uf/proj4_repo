@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 
-# نتائج النماذج من التشغيل السابق
+
 models = [
     "TF-IDF + Logistic Regression",
     "BERT + Logistic Regression"
