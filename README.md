@@ -1,5 +1,7 @@
 # proj4_repo
-'''
+### 📁 Project Structure
+
+```text
 proj4_repo/
 ├── alembic/
 ├── app/
@@ -25,7 +27,7 @@ proj4_repo/
 ├── train_bert_model.py
 ├── train_model.py
 └── X_embeddings.npy
-'''
+```
 1. Clone & Set Up Virtual Environment
 # Clone the repository
 git clone 
