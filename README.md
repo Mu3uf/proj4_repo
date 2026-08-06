@@ -28,39 +28,79 @@ proj4_repo/
 ├── train_model.py
 └── X_embeddings.npy
 ```
-1. Clone & Set Up Virtual Environment
-# Clone the repository
-git clone 
+Setup & Run Instructions
+1. Navigate to the project folder
+bash
 cd proj4_repo
-
-# Create a virtual environment
+2. Create and activate the virtual environment (venv)
+bash
 python3 -m venv venv
-
-# Activate the virtual environment
-source venv/bin/activate
-
-2. Install Project Dependencies
-pip install --upgrade pip
+source venv/bin/activate      # On Linux/Mac
+3. Install the required libraries
+bash
 pip install -r requirements.txt
 
-3. Database Setup (PostgreSQL)
+Or manually:
 
-Ensure your PostgreSQL server is running and create the target database:
-CREATE DATABASE sentiment_db;
-(Make sure to update your connection string inside app/db.py with your username and password if different).
-4. Run Database Migrations (Alembic)
+bash
+pip install pandas numpy scikit-learn nltk matplotlib seaborn joblib torch transformers sqlalchemy psycopg2-binary python-dotenv
+4. Set up the database (PostgreSQL)
+Open pgAdmin and create a new database, for example:
+   Database name: sentiment_db
+Create a .env file in the project root with your connection details:
+env
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_NAME=sentiment_db
+   DB_USER=postgres
+   DB_PASSWORD=your_password
+Make sure the SentimentPrediction table is created (via SQLAlchemy Core on the first run of main.py, or manually via pgAdmin) with the following columns:
+Column	Type
+id	Integer (Primary Key)
+input_text	Text
+predicted_sentiment	String
+prediction_score	Float
+created_at	Timestamp
+5. Run the data preparation and training steps (in order, one time only)
+bash
+python explore_data.py       # Data exploration
+python preprocessing.py      # Text cleaning
+python train_model.py        # Train TF-IDF + Naive Bayes/Logistic Regression
+python bert_features.py      # Generate BERT Embeddings (may take a while)
+python train_bert_model.py   # Train and evaluate the model on BERT embeddings
 
-Apply all schema updates to create the predictions table in PostgreSQL:
-alembic upgrade head
-5. Data Preprocessing & Model Training (Optional/Initial Run)
+⚠️ These steps only need to be run once to generate the required files (model_lr.pkl, tfidf_vectorizer.pkl, X_embeddings.npy). Once these files exist, there is no need to rerun them unless the data or model changes.
 
-If you want to re-run data cleaning, feature extraction, and model training:
-# Preprocess data and perform EDA
-python explore_data.py
+6. Run the main application (main.py)
 
-# Train baseline models, perform hyperparameter tuning, and save .pkl models
-python train_model.py
-6. Run the Main Pipeline
+Once the trained models are available and the database is ready:
 
-Execute the main application to generate new sentiment predictions, persist them automatically into PostgreSQL, and output the formatted database history in the terminal:
+bash
 python main.py
+
+When run, main.py performs the following:
+
+Loads the saved model (model_lr.pkl) and the vectorizer (tfidf_vectorizer.pkl)
+Accepts new input text from the user
+Predicts the sentiment (Positive / Negative / Neutral)
+Stores the result in the SentimentPrediction table in the PostgreSQL database
+Displays the prediction result on screen
+7. Verify the stored results via pgAdmin
+Open pgAdmin
+Navigate to: Servers → PostgreSQL → Databases → sentiment_db → Schemas → public → Tables → SentimentPrediction
+Click View/Edit Data → All Rows to view all stored predictions
+📊 Example Output
+Text: I love this product, it works perfectly!
+Predicted Sentiment: Positive
+--------------------------------------------------
+Text: This was a terrible experience. I'll never buy it again.
+Predicted Sentiment: Negative
+--------------------------------------------------
+Text: It's okay, not bad but not great either.
+Predicted Sentiment: Neutral
+--------------------------------------------------
+🛠️ Troubleshooting
+Issue	Solution
+FileNotFoundError for data files	Make sure you're running commands from the project root (proj4_repo)
+Database connection fails	Make sure PostgreSQL is running and .env values are correct
+bert_features.py runs slowly

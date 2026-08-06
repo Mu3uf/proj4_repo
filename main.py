@@ -10,7 +10,7 @@ def run_sentiment_pipeline(text: str):
     
     probabilities = model.predict_proba(text_vectorized)
     confidence_score = float(max(probabilities[0]))
-
+#نص + التوقع + الثقه
     save_prediction(
         input_text=text,
         predicted_sentiment=predicted_label,

@@ -12,7 +12,7 @@ print(df.head())
 df = df[['text', 'airline_sentiment']]
 df.columns = ['text', 'sentiment']
 
-# توزيع الفئات
+
 print(df['sentiment'].value_counts())
 
 
